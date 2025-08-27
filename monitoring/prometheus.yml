@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'cust-churn-railway'
+    scheme: https
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['cust-churn-production.up.railway.app']
+        labels:
+          instance: 'cust-churn-production'
+          environment: 'production'
+    # Jika aplikasi Anda memerlukan autentikasi, tambahkan konfigurasi berikut:
+    # basic_auth:
+    #   username: 'your-username'
+    #   password: 'your-password'
+    # Jika menggunakan API key:
+    # authorization:
+    #   credentials: 'Bearer YOUR_API_KEY'

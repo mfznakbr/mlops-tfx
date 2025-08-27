@@ -1,25 +1,17 @@
-# a443-cc-pipeline
-Ini adalah repositori untuk latihan pada kelas Machine Learning Operations (MLOps)
+# Submission 1: Prediction Bank Customer Churn
+Nama: Muhammad Fauzani Akbar
 
-- Install CLI heroku ([tautan](https://devcenter.heroku.com/articles/heroku-cli#install-the-heroku-cli))
-- Login ke heroku melalui CLI dengan perintah berikut.
-```
-heroku login
-```
-- Login ke heroku container registry ([dokumentasi](https://devcenter.heroku.com/articles/container-registry-and-runtime#logging-in-to-the-registry:~:text=%24-,heroku%20container%3Alogin,-or%20directly%20via))
+Username dicoding: fznabr
 
-```
-heroku container:login
-```
-
-- Push container ke heroku container registry
-
-```
-heroku container:push web -a cc-prediction
-```
-
-- Release model serving
-
-```
-heroku container:release web -a cc-prediction
-```
+| | Deskripsi |
+| ----------- | ----------- |
+| Dataset | [Bank Customer Churn](https://www.kaggle.com/datasets/radheshyamkollipara/bank-customer-churn) |
+| Masalah | Masalah yang diangkat adalah memprediksi nasabah yang berisiko meninggalkan bank (churn) menggunakan data demografi, perilaku, dan interaksi nasabah seperti usia, saldo, kepemilikan produk, aktivitas, dan kepuasan. Tujuannya agar bank bisa mengambil langkah proaktif mempertahankan nasabah, karena menjaga nasabah lebih hemat dibanding akuisisi baru.|
+| Solusi machine learning | Solusi machine learning yang akan dibuat adalah model klasifikasi berbasis deep learning untuk memprediksi apakah seorang nasabah akan meninggalkan bank (churn) atau tidak. Model ini memanfaatkan fitur demografi, perilaku, dan interaksi nasabah untuk belajar pola churn, sehingga bank bisa melakukan tindakan proaktif mempertahankan nasabah berisiko tinggi. |
+| Metode pengolahan |Metode pengolahan data dilakukan dengan membersihkan kolom tidak relevan, mengecek duplikasi dan missing value, lalu mengambil sampel data. Selanjutnya digunakan pipeline TFX: ExampleGen (konversi data), StatisticsGen dan SchemaGen (analisis dan skema), ExampleValidator (validasi), Transform (feature engineering), Trainer (pelatihan model), hingga Evaluator dan Pusher untuk evaluasi serta deployment model. |
+| Arsitektur model | Arsitektur model yang digunakan berupa jaringan saraf tiruan (*deep neural network*) dengan beberapa lapisan. Input terdiri dari fitur kategorikal (one-hot encoding) dan numerik yang kemudian digabungkan (*concatenate*). Selanjutnya melewati tiga lapisan Dense berurutan dengan 32, 16, dan 16 neuron beraktivasi ReLU, lalu lapisan output dengan 1 neuron beraktivasi sigmoid untuk klasifikasi biner.|
+| Metrik evaluasi | Metrik evaluasi yang digunakan meliputi **AUC** untuk mengukur kemampuan model membedakan kelas, **Precision** untuk menilai ketepatan prediksi positif, **Recall** untuk mengukur kelengkapan deteksi kelas positif, **ExampleCount** untuk menghitung jumlah sampel evaluasi, serta **BinaryCrossentropy** sebagai fungsi loss utama dengan ambang batas tertentu guna memastikan model memiliki performa yang stabil dan lebih baik dari baseline.|
+| Performa model | Performa model menunjukkan hasil yang sangat baik dengan **loss sangat kecil** (mencapai 0.0006 pada data latih dan 0.0002 pada data validasi) serta **akurasi biner 100%** pada kedua dataset. Hal ini mengindikasikan model mampu mempelajari pola data dengan sangat baik dan melakukan prediksi secara konsisten tanpa kesalahan pada data latih maupun validasi. |
+| Opsi deployment | Untuk model deployment tersedia beberapa opsi, misalnya **Heroku** dan **Railway**. Heroku lebih sederhana digunakan untuk aplikasi kecil, tetapi Railway lebih fleksibel, modern, serta mendukung integrasi pipeline MLOps dengan mudah. Karena pengalaman sebelumnya kesulitan di Railway, memilih Railway sebagai platform deployment menjadi penting agar bisa belajar lebih dalam dan menguasai penggunaannya untuk proyek selanjutnya. |
+| Web app | Tautan web app yang digunakan untuk mengakses model serving. Contoh: [nama-model](https://railway.com/project/9ee0d688-04ff-4c56-bb6f-852fb7435a8d/service/04478d20-57b7-44d3-8006-5fdeaaf22108?environmentId=9bc1866d-83c8-43d5-adf8-35084ae7b3cd&id=a6937583-6385-442a-8fa1-4000d8d94f12)|
+| Monitoring | Deksripsi terkait hasil monitoring dari model serving |
