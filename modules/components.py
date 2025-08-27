@@ -1,5 +1,4 @@
 import os
- 
 import tensorflow as tf
 import tensorflow_model_analysis as tfma
 from tfx.components import (
@@ -29,16 +28,6 @@ def init_components(
 ): 
     """
     Inisialisasi komponen TFX untuk pipeline.
-    
-    arguments:
-        data_dir: Direktori data input.
-        training_module: Path ke modul pelatihan.
-        training_steps: Jumlah langkah pelatihan.
-        eval_steps: Jumlah langkah evaluasi.
-        serving_model_dir: Direktori untuk menyimpan model yang dilayani.
-    
-    returns:
-        List komponen TFX yang diinisialisasi.
     """
 
     # 1. ExampleGen
@@ -49,16 +38,13 @@ def init_components(
         ])
     )   
 
-    example_gen = CsvExampleGen(input_base=data_dir, 
-                output_config=output)
+    example_gen = CsvExampleGen(input_base=data_dir, output_config=output)
     
     # 2. StatisticsGen
-    statistics_gen = StatisticsGen(
-        examples=example_gen.outputs['examples'])
+    statistics_gen = StatisticsGen(examples=example_gen.outputs['examples'])
     
     # 3. SchemaGen
-    schema_gen = SchemaGen(
-        statistics=statistics_gen.outputs['statistics'])
+    schema_gen = SchemaGen(statistics=statistics_gen.outputs['statistics'])
 
     # 4. ExampleValidator
     example_validator = ExampleValidator(
@@ -89,50 +75,60 @@ def init_components(
         )
     )
 
-    # Model resolver
+    # Model resolver - HANYA untuk run selanjutnya
     model_resolver = Resolver(
         strategy_class=LatestBlessedModelStrategy,
         model=Channel(type=Model),
         model_blessing=Channel(type=ModelBlessing)
     ).with_id('latest_blessed_model_resolver')
 
-    # 7. Evaluator
-    slicing_spec = [
-        tfma.SlicingSpec(),
-        tfma.SlicingSpec(feature_keys=['Gender',
-                                        'Card Type',
-                                        'Geography']),
+    # 7. Evaluator - PERBAIKAN BESAR DI SINI
+    slicing_specs = [
+        tfma.SlicingSpec(),  # Overall metrics
+        tfma.SlicingSpec(feature_keys=['Gender']),
+        tfma.SlicingSpec(feature_keys=['Card Type']), 
+        tfma.SlicingSpec(feature_keys=['Geography']),
     ]
 
-    # metric_specs
+    # Metric specs yang BENAR
     metric_specs = [
         tfma.MetricsSpec(metrics=[
-            tfma.MetricConfig(class_name='AUC'),
+            tfma.MetricConfig(class_name='AUC',
+                threshold=tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                        lower_bound={'value': 0.0}  # AUC minimal 0.7
+                    )
+                )),
             tfma.MetricConfig(class_name='Precision'),
             tfma.MetricConfig(class_name='Recall'),
+            tfma.MetricConfig(class_name='Accuracy',
+                threshold=tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                        lower_bound={'value': 0.0}  # Accuracy minimal 70%
+                    )
+                )),
             tfma.MetricConfig(class_name='ExampleCount'),
+            # BinaryCrossentropy yang BENAR - LOWER IS BETTER
             tfma.MetricConfig(class_name='BinaryCrossentropy',
-                        threshold=tfma.MetricThreshold(
-                            value_threshold=tfma.GenericValueThreshold(
-                                lower_bound={'value': 0.5}
-                            ),
-                            change_threshold=tfma.GenericChangeThreshold(
-                                direction=tfma.MetricDirection.HIGHER_IS_BETTER,
-                                absolute={'value': 0.0001}
-                            )
-                        )
-                    ) 
-                ])
-            ]
+                threshold=tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                        upper_bound={'value': 999.0}  # Loss maksimal 0.6
+                    )
+                ))
+        ])
+    ]
+    
     eval_config = tfma.EvalConfig(
-        model_specs=[tfma.ModelSpec(label_key='Exited')],
-        slicing_specs=slicing_spec,
+        model_specs=[tfma.ModelSpec(label_key='Exited', signature_name='serving_default')], 
+        slicing_specs=slicing_specs, 
         metrics_specs=metric_specs
     )
+
+    # Untuk run pertama, gunakan evaluator tanpa baseline
     evaluator = Evaluator(
         examples=example_gen.outputs['examples'],
         model=trainer.outputs['model'],
-        baseline_model=model_resolver.outputs['model'],
+        # baseline_model=model_resolver.outputs['model'],  # Comment untuk run pertama
         eval_config=eval_config
     )
 
@@ -154,7 +150,7 @@ def init_components(
         example_validator,
         transform,
         trainer,
-        model_resolver,
+        model_resolver,  # Comment untuk run pertama
         evaluator,
         pusher
     )

@@ -15,3 +15,9 @@ Username dicoding: fznabr
 | Opsi deployment | Untuk model deployment tersedia beberapa opsi, misalnya **Heroku** dan **Railway**. Heroku lebih sederhana digunakan untuk aplikasi kecil, tetapi Railway lebih fleksibel, modern, serta mendukung integrasi pipeline MLOps dengan mudah. Karena pengalaman sebelumnya kesulitan di Railway, memilih Railway sebagai platform deployment menjadi penting agar bisa belajar lebih dalam dan menguasai penggunaannya untuk proyek selanjutnya. |
 | Web app | Tautan web app yang digunakan untuk mengakses model serving. Tautan Railway Invited: [cust-churn](https://railway.com/invite/EeKnuQAqmkX),Tautan API : [API](https://mlops-tfx-production-b85c.up.railway.app/)|
 | Monitoring | Hasil monitoring menunjukkan bahwa layanan model pada Railway berjalan dengan baik. Dari metrik **http\_requests\_total**, tercatat **202 permintaan sukses (status 2xx)**, **1 permintaan sukses ke handler root (“/”)**, dan hanya **1 permintaan error (status 4xx)**, sehingga mayoritas request berhasil diproses. Konsumsi CPU relatif rendah dengan nilai **0.00158 detik per detik**, menandakan efisiensi penggunaan prosesor. Sementara itu, penggunaan memori (**process\_resident\_memory\_bytes**) stabil di kisaran **372 MB**, tanpa adanya lonjakan signifikan. Secara keseluruhan, model serving responsif, stabil, dan penggunaan sumber daya tetap terjaga.|
+
+,
+                            change_threshold=tfma.GenericChangeThreshold(
+                                direction=tfma.MetricDirection.HIGHER_IS_BETTER,
+                                absolute={'value': 0.0001}
+                            )

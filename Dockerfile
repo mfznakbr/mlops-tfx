@@ -6,6 +6,6 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir tensorflow-cpu==2.10.1 fastapi uvicorn numpy==1.23.5 prometheus_fastapi_instrumentator
 
 COPY app.py .
-COPY op/pp/Trainer/model/20/Format-Serving/ ./model/
+COPY fznabr-pipeline/serving_model/1756283062 ./model/
 
 CMD ["python", "app.py"]

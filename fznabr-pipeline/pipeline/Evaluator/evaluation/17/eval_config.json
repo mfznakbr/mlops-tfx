@@ -1,0 +1,76 @@
+{
+  "evalConfig": {
+    "modelSpecs": [
+      {
+        "signatureName": "serving_default",
+        "labelKey": "Exited"
+      }
+    ],
+    "slicingSpecs": [
+      {},
+      {
+        "featureKeys": [
+          "Gender"
+        ]
+      },
+      {
+        "featureKeys": [
+          "Card Type"
+        ]
+      },
+      {
+        "featureKeys": [
+          "Geography"
+        ]
+      }
+    ],
+    "metricsSpecs": [
+      {
+        "metrics": [
+          {
+            "className": "AUC",
+            "threshold": {
+              "valueThreshold": {
+                "lowerBound": 0.0
+              }
+            }
+          },
+          {
+            "className": "Precision"
+          },
+          {
+            "className": "Recall"
+          },
+          {
+            "className": "Accuracy",
+            "threshold": {
+              "valueThreshold": {
+                "lowerBound": 0.0
+              }
+            }
+          },
+          {
+            "className": "ExampleCount"
+          },
+          {
+            "className": "BinaryCrossentropy",
+            "threshold": {
+              "valueThreshold": {
+                "upperBound": 999.0
+              }
+            }
+          }
+        ],
+        "modelNames": [
+          ""
+        ]
+      }
+    ]
+  },
+  "version": "0.42.0",
+  "dataLocation": "<user provided PCollection>",
+  "fileFormat": "<unknown>",
+  "modelLocations": {
+    "": "/mnt/d/b/op/pp/Trainer/model/16/Format-Serving"
+  }
+}

@@ -63,7 +63,7 @@ if __name__ == '__main__':
         DATA_ROOT,
         training_module=TRAINER_MODULE_FILE,
         transform_module=TRANSFORM_MODULE_FILE,
-        training_steps=700,
+        training_steps=800,
         eval_steps=300,
         serving_model_dir=SERVING_MODEL_DIR,
     )
